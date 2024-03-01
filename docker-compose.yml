@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  myriota-sdk-dev-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Get your user id and group id using `id -u` and `id -g`
+      args:
+        USER_ID: 1000
+        GROUP_ID: 1000
+    container_name: myriota-sdk-dev-container
+    privileged: true
+    working_dir: /opt/working/SDK
+    volumes:
+      - .:/opt/working/SDK
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+    environment:
+      - PATH=/opt/working/SDK/tools:/opt/gcc-arm/bin:$PATH
+    command:
+      - /bin/bash
+      - -c
+      - |
+        sudo mkdir -p /etc/udev/rules.d
+        sudo service udev restart
+        ./install.sh
+        ./install-test.sh
+        echo ''
+        echo '#############################################################################'
+        echo 'Myriota Dev Container Is Ready!'
+        echo 'Remote From Host Using docker exec -i -t myriota-sdk-dev-container bash'
+        echo '#############################################################################'
+        echo ''
+        tail -F anything
